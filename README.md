@@ -1,4 +1,4 @@
-#WebChat
+##WebChat
 Hlavním záměrem mé semestrální práce je vytvořit chat dostupný z prohlížeče přes který spolu budou moci komunikovat 2 osoby
 
 #popis
@@ -12,3 +12,6 @@ přidání css
 
 #finální aplikace
 komunikace jednotlivých uživatelů mezi sebou
+
+#odkazy
+https://developers.google.com/analytics/devguides/collection/analyticsjs/cookies-user-id#automatic_cookie_domain_configuration
