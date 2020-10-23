@@ -1,0 +1,21 @@
+posílání dat mezi uživatelem - serverem by bylo ideální provést pomocí POST requestu, v základu byla nadefinována proměná $_POST["sent"], v ní by se uložil typ dotazu - přidání uživatele, ověření identity, otevření chatu, pro získání informací o chatu, pro přidání zprávy, přidání chatu, informace o uživateli
+
+pro každý příkaz by existoval textový jednoslovný název/písmeno, které by bylo uložené v sent, dále by se posílalo id (nebo bylo uloženo v cookie/session) - mělo by být delší, aby jej nemohl nikdo náhodou zneužít náhodným typováním, tj. nějaká forma bezpečnosti, další data by záležela na typu:
+přidání uživatele
+	obsahovalo by pouze jméno, aplikace by vytvořila tohoto uživatele, automaticky by mu přidělila jméno, v případě, že by již takový uživatel existoval (schodovaly by se jména), by se na konec přidala číslovka, takto tvořená jména by se ověřovala, dokud by uživatel nebyl unikátní
+ověření indentity:
+	nejjednoduší požadavek, neobsahoval by žádné další parametry, vrátil by jména a id všech uživatelů
+otevření chatu:
+	obsahoval by volitelný parametr id chatu, v případě, že by byl prázdný by vrátil společný chat, jinak text chatu s daným id, v případě že by uživatel nebyl v seznamu uživatelů, kteří mají k tomuto chatu oprávnění by se choval stejně jako s prázdnou hodnotou (hlavní chat)
+získání informací o chatu:
+	stejné parametry jako otevření, vrací stejným způsbem název chatu, názvy a id uživatelů
+přidání zprávy:
+	v parametrech bude navíc id chatu, zpráva, v případě že uživatel nebude mít pravomoci posílat zprávy do daného chatu, se nevykoná nic, bude vracet buď 200, 403(nemá práva zapisovat), 404(daný chat nebude existovat), 500(ostatní důvody, nejspíše chyba na straně serveru či sítě)
+přidání chatu:
+	parametrem bude název chatu, počet uživatelů, kteří budou do chatu přidáni, jejich id (nějak vhodně oddělená, například písmenem, je možné ve výsledku posílat request ve formě json - v takovém případě by se jednalo o pole), server následně chat vytvoří s automaticky přiděleným id
+informace o uživateli:
+	parametrem by bylo id druhého uživatele, vrací jméno, společné chaty
+
+každý uživatel má dvojí id - jedno pro použití ostatními, druhé pro jeho vlastní ověření, jeho tvorba by mohla být pomocí šifrovacího algoritmu, kdy na vstupu by se použil aktuální čas, jméno uživatele a náhodné číslo
+
+většinu částí by si zpracoval samotný prohlížeč (případně uživatel sám, kdyby si otevřel konzoli) - názvy nových chatů, vlastní jména..., z tohoto důvodu by byla následně provedena kontrola na serveru, která by veškerá neplatná jména upravila na platný výraz a až poté porovnávala s ostatními

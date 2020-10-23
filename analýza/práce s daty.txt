@@ -1,0 +1,10 @@
+data se budou dělit na dvě skupiny - uživatelé, chaty(, zprávy)
+uživatelé:
+	id, id_ověření, jméno, aktivní chaty (jejich id, aktivní chat je myšleno chat, ve kterém již uživatel byl)
+chaty:
+	id, název, aktivní uživatelé (jejich id), zprávy
+(
+zprávy:
+	datum, čas, id uživatele, text, [id]
+#zprávy lze ukládat již u chatů jako součást textu, tedy by nebylo nutné použít id
+)
