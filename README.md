@@ -1,5 +1,5 @@
 <h1>WebChat</h1>
-Hlavním záměrem mé semestrální práce je vytvořit chat dostupný z prohlížeče přes který spolu budou moci komunikovat 2 osoby
+Hlavním záměrem mé semestrální práce je vytvořit chat dostupný z prohlížeče, přes který spolu budou moci komunikovat 2 osoby
 
 <h2>popis</h2>
 Základem bude PHP soubor, který se bude starat o vstup a výstup - uživatel s id (nejspíše využiji "Cookies and User Identification"), se vykoná žádost o kterou si zažádá - poslat zprávu/vypsat chat - ty vudou využívat hlavního databázového souboru, který následně zvolí jaký soubor použít pro daný požadavek (v plánu je jeden hlavní json soubor a dvě složky - uživatele, chaty)
