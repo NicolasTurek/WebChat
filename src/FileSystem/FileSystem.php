@@ -45,30 +45,32 @@ struktura vedlejších souborů, jejich název je id + .json
 */
 
 class FileSystem {
-	private $data, $folder;
-	public function __construct(string $folder){
+	private $data, $folder, $uid;
+	public function __construct(string $folder, string $controlId, int $userId){
 		$this->folder = $folder;
+		$data = $this->loadData();
+		$uid = $this->checkUser($controlId, $userId);
 	}
 	
 	// funkce třídy
 	
 	// poslání zprávy
-	public function sendMessage(string $userId, string $chatId, string $message) : bool {
+	public function sendMessage(int $userId, int $chatId, string $message) : bool {
 		return false;
 	}
 	// výpis chatu
-	public function showChat(string $userId, string $chatId) : string {
+	public function showChat(int $chatId) : string {
 		return "<div>Chat</div>";
 	}
 	// výpis uživatelů
-	public function showUsers(string $userId) : string {
+	public function showUsers() : string {
 		return "<div>users</div>";
 	}
 	
 	// práce se soubory
 	
 	// načtení hlavního souboru
-	private function loadData() : array {
+	protected function loadData() : array {
 		$file = fopen($folder . "main.json", "r");
 		if (!isset($file) || filesize($folder . "main.json") == 0) return ["cl" => 0, "ul" => 0, "chats" => [], "users" => []];
 		$string = fread($file, filesize($folder . "main.json"));
@@ -76,7 +78,7 @@ class FileSystem {
 		return json_decode($string, true);
 	}
 	// uložení hlavního souboru
-	private function saveData() : bool {
+	protected function saveData() : bool {
 		$file = fopen($folder . "main.json", "w");
 		if (isset($file)) {
 			fwrite($file, json_encode($chat));
@@ -87,7 +89,7 @@ class FileSystem {
 	}
 	
 	// načtení chatu ze souboru
-	private function loadChat(string $chatId) : array {
+	protected function loadChat(int $chatId) : array {
 		$file = fopen($folder . $chatId . ".json", "r");
 		if (!isset($file) || filesize($folder . $chatId . ".json") == 0) return ["length" => 0, "messages" => []];
 		$string = fread($file, filesize($folder . $chatId . ".json"));
@@ -95,7 +97,7 @@ class FileSystem {
 		return json_decode($string, true);
 	}
 	// uložení chatu do souboru
-	private function saveChat(string $chatId, array $chat) : bool {
+	protected function saveChat(int $chatId, array $chat) : bool {
 		$file = fopen($folder . $chatId . ".json", "w");
 		if (isset($file)) {
 			fwrite($file, json_encode($chat));
@@ -106,4 +108,8 @@ class FileSystem {
 	}
 	
 	// zde přibudou bezpečnostní funkce (ověření oprávnění k přístupu do chatu)
+	private function checkUser(string $cuid, int $id) : int, false {
+		if ($data->ul > $id) if ($data->users[$id]->cid == $cuid) return $id;
+		return false;
+	}
 }
