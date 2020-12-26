@@ -55,16 +55,55 @@ class FileSystem {
 	// funkce třídy
 	
 	// poslání zprávy
-	public function sendMessage(int $userId, int $chatId, string $message) : bool {
+	public function sendMessage(int $chatId, string $message) : bool {
+		if ($this->data->cl < $chatId) {
+			foreach ($this->data->chats[$chatId]->users as $userId) {
+				if ($userId == $this->uid) {
+					$chat = $this->loadChat($chatId);
+					$chat->messages[$chat->ml++] = [
+						"id" => $chat->ml - 1,
+						"uid" => $userId,
+						"date" => date("H:i:m;d.m.Y"),
+						
+						"value" => $message
+					];
+					$this->saveChat($chat);
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 	// výpis chatu
-	public function showChat(int $chatId) : string {
-		return "<div>Chat</div>";
+	public function showChat(int $chatId, int $last = 0, int $range = 10) : string {
+		if ($this->data->cl < $chatId) {
+			foreach ($this->data->chats[$chatId]->users as $userId) {
+				if ($userId == $this->uid) {
+					$chat = $this->loadChat($chatId);
+					$string = "<div class=\"chat\">";
+					for ($i = ($chat->ml - $last - $range < 0 ? 0 : $chat->ml - $last - $range); $i < $chat->ml - $last; $i++){
+						$string .= "<p id=\"" . $chat->messages[$i]->id . "\">" .
+							"<span class=\"messageUserName\">" . $this->data->users[$chat->messages[$i]->uid]->name . "</span>" .
+							"<span class=\"messageValue\">" . $chat->messages[$i]->value . "</span>" .
+						"</p>";
+					}
+					string .= "</div>";
+					return string;
+				}
+			}
+		}
+		return "<div class=\"chat\">Přístup odepřen!</div>";
 	}
 	// výpis uživatelů
 	public function showUsers() : string {
-		return "<div>users</div>";
+		$string = "<div class\"users\">"
+		foreach ($this->data->users as $user) {
+			$string .= "<p id=\"" . $user->id . "\">" .
+				"<span class=\"userName\">" . $user->name . "</span>" .
+			"</p>";
+		}
+		$string .= "</div>";
+		return $string;
 	}
 	
 	// práce se soubory
@@ -108,8 +147,10 @@ class FileSystem {
 	}
 	
 	// zde přibudou bezpečnostní funkce (ověření oprávnění k přístupu do chatu)
-	private function checkUser(string $cuid, int $id) : int, false {
+	private function checkUser(string $cuid, int $id) : int {
 		if ($data->ul > $id) if ($data->users[$id]->cid == $cuid) return $id;
-		return false;
+		return -1;
 	}
+	
+	// tady asi bude ještě pár funkcí... zapomněl jsem na vytvoření uživatelů a chatů
 }
