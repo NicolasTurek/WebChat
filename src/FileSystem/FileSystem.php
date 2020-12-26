@@ -87,8 +87,8 @@ class FileSystem {
 							"<span class=\"messageValue\">" . $chat->messages[$i]->value . "</span>" .
 						"</p>";
 					}
-					string .= "</div>";
-					return string;
+					$string .= "</div>";
+					return $string;
 				}
 			}
 		}
@@ -96,7 +96,7 @@ class FileSystem {
 	}
 	// výpis uživatelů
 	public function showUsers() : string {
-		$string = "<div class\"users\">"
+		$string = "<div class\"users\">";
 		foreach ($this->data->users as $user) {
 			$string .= "<p id=\"" . $user->id . "\">" .
 				"<span class=\"userName\">" . $user->name . "</span>" .
