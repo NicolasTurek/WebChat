@@ -48,8 +48,8 @@ class FileSystem {
 	private $data, $folder, $uid;
 	public function __construct(string $folder, string $controlId, int $userId){
 		$this->folder = $folder;
-		$data = $this->loadData();
-		$uid = $this->checkUser($controlId, $userId);
+		$this->data = $this->loadData();
+		$this->uid = $this->checkUser($controlId, $userId);
 	}
 	
 	// funkce třídy
@@ -110,17 +110,17 @@ class FileSystem {
 	
 	// načtení hlavního souboru
 	protected function loadData() : array {
-		$file = fopen($folder . "main.json", "r");
-		if (!isset($file) || filesize($folder . "main.json") == 0) return ["cl" => 0, "ul" => 0, "chats" => [], "users" => []];
-		$string = fread($file, filesize($folder . "main.json"));
+		$file = fopen($this->folder . "main.json", "r");
+		if (!isset($file) || filesize($this->folder . "main.json") == 0) return ["cl" => 0, "ul" => 0, "chats" => [], "users" => []];
+		$string = fread($file, filesize($this->folder . "main.json"));
 		fclose($file);
 		return json_decode($string, true);
 	}
 	// uložení hlavního souboru
 	protected function saveData() : bool {
-		$file = fopen($folder . "main.json", "w");
+		$file = fopen($this->folder . "main.json", "w");
 		if (isset($file)) {
-			fwrite($file, json_encode($chat));
+			fwrite($file, json_encode($this->data));
 			fclose($file);
 			return true;
 		}
@@ -129,15 +129,15 @@ class FileSystem {
 	
 	// načtení chatu ze souboru
 	protected function loadChat(int $chatId) : array {
-		$file = fopen($folder . $chatId . ".json", "r");
-		if (!isset($file) || filesize($folder . $chatId . ".json") == 0) return ["length" => 0, "messages" => []];
-		$string = fread($file, filesize($folder . $chatId . ".json"));
+		$file = fopen($this->folder . $chatId . ".json", "r");
+		if (!isset($file) || filesize($this->folder . $chatId . ".json") == 0) return ["length" => 0, "messages" => []];
+		$string = fread($file, filesize($this->folder . $chatId . ".json"));
 		fclose($file);
 		return json_decode($string, true);
 	}
 	// uložení chatu do souboru
 	protected function saveChat(int $chatId, array $chat) : bool {
-		$file = fopen($folder . $chatId . ".json", "w");
+		$file = fopen($this->folder . $chatId . ".json", "w");
 		if (isset($file)) {
 			fwrite($file, json_encode($chat));
 			fclose($file);
@@ -146,11 +146,34 @@ class FileSystem {
 		return false;
 	}
 	
-	// zde přibudou bezpečnostní funkce (ověření oprávnění k přístupu do chatu)
+	// bezpečnostní funkce
 	private function checkUser(string $cuid, int $id) : int {
-		if ($data->ul > $id) if ($data->users[$id]->cid == $cuid) return $id;
+		if ($this->data->ul > $id) if ($this->data->users[$id]->cid == $cuid) return $id;
 		return -1;
 	}
 	
-	// tady asi bude ještě pár funkcí... zapomněl jsem na vytvoření uživatelů a chatů
+	// tvoření nových uživatelů
+	public function createUser(string $cid, string $name) : bool {
+		foreach ($this->data->users as $usr) {
+			if ($usr->cid == $cid) return false;
+		}
+		$this->data->users[$this->data->ul++] = [
+			"id" => $this->data->ul - 1,
+			"cid" => $cid,
+			"name" => $name,
+			"cl" => 0,
+			"chats" => []
+		];
+		return true;
+	}
+	// tvoření nových chatů
+	public function createChat(string $name, array $users) : bool {
+		$this->data->chats[$this->data->cl++] = [
+			"id" => $this->data->cl - 1,
+			"name" => $name,
+			"ul" => count($users),
+			"chats" => $users
+		];
+		return true;
+	}
 }
